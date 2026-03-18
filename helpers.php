@@ -1,9 +1,5 @@
 <?php
 
-/**
- * Tworzy i zwraca połączenie z bazą danych.
- * Rzuca wyjątek przy błędzie połączenia.
- */
 function polaczZBaza(): mysqli {
     require __DIR__ . '/connect.php';
     mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
@@ -17,9 +13,7 @@ function polaczZBaza(): mysqli {
     }
 }
 
-/**
- * Sprawdza czy admin jest zalogowany. Jeśli nie — przekierowuje.
- */
+
 function wymagajAdmina(string $sciezka_powrotu = '../administrator/admin.php'): void {
     if (!isset($_SESSION['zalogowany_admin'])) {
         header('Location: ' . $sciezka_powrotu);
@@ -27,9 +21,7 @@ function wymagajAdmina(string $sciezka_powrotu = '../administrator/admin.php'): 
     }
 }
 
-/**
- * Sprawdza czy gracz jest zalogowany. Jeśli nie — przekierowuje.
- */
+
 function wymagajGracza(string $sciezka_powrotu = 'index.php'): void {
     if (!isset($_SESSION['zalogowany'])) {
         header('Location: ' . $sciezka_powrotu);
@@ -37,9 +29,7 @@ function wymagajGracza(string $sciezka_powrotu = 'index.php'): void {
     }
 }
 
-/**
- * Generuje unikalne hasło dla gracza (słowo + liczba).
- */
+
 function generujHasloGracza(mysqli $polaczenie): string {
     $zbior_slow = ['gruszka', 'sieradz', 'rynek', 'hufiec', 'harcerz', 'zamek', 'papier', 'stojak', 'list', 'kalosz'];
     do {
@@ -54,9 +44,7 @@ function generujHasloGracza(mysqli $polaczenie): string {
     return $haslo;
 }
 
-/**
- * Generuje unikalne hasło numeryczne dla punktu (checkpoint).
- */
+
 function generujHasloPunktu(mysqli $polaczenie): string {
     do {
         $haslo = (string)rand(1000000, 9999999) . (string)rand(1000000, 9999999);
@@ -70,9 +58,7 @@ function generujHasloPunktu(mysqli $polaczenie): string {
     return $haslo;
 }
 
-/**
- * Waliduje i zwraca dodatnią liczbę całkowitą z GET lub kończy skrypt.
- */
+
 function pobierzIdZGet(string $klucz): int {
     $wartosc = filter_input(INPUT_GET, $klucz, FILTER_VALIDATE_INT, [
         'options' => ['min_range' => 1]
