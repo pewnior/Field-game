@@ -129,11 +129,11 @@ Domyślne dane logowania:
 |-------|-------|
 | `admin` | `admin` |
 
-> ⚠️ Zmień hasło po pierwszym logowaniu!
+>  Zmień hasło po pierwszym logowaniu!
 
 ---
 
-## 🗄️ Struktura bazy danych
+##  Struktura bazy danych
 
 ### Tabela `administrators`
 
@@ -185,7 +185,7 @@ checkpoints    (1) ──── (N) logs
 
 ---
 
-## 📁 Struktura projektu
+##  Struktura projektu
 
 ```
 field-game/
@@ -277,7 +277,7 @@ Po zalogowaniu admin ma dostęp do:
 
 ---
 
-## 🔒 Bezpieczeństwo
+##  Bezpieczeństwo
 
 - Hasła administratorów hashowane algorytmem **BCrypt** (`password_hash` / `password_verify`)
 - Wszystkie zapytania SQL chronione przez **Prepared Statements** (ochrona przed SQL Injection)
@@ -287,7 +287,7 @@ Po zalogowaniu admin ma dostęp do:
 
 ---
 
-## 📄 Licencja
+##  Licencja
 
 Ten projekt jest dostępny na licencji [MIT](LICENSE).
 
