@@ -1,94 +1,106 @@
-# 🎯 Field Game
+# Field Game
 
 Aplikacja webowa do organizowania terenowych gier QR. Gracze zdobywają punkty skanując kody QR ukryte w terenie i logując się na każdym punkcie kontrolnym. Administrator zarządza grą przez dedykowany panel.
 
-\---
+---
 
-## 📋 Spis treści
+## Demo
 
-* [Funkcjonalności](#funkcjonalności)
-* [Zrzuty ekranu](#zrzuty-ekranu)
-* [Wymagania](#wymagania)
-* [Instalacja](#instalacja)
-* [Struktura bazy danych](#struktura-bazy-danych)
-* [Struktura projektu](#struktura-projektu)
-* [Jak działa gra](#jak-działa-gra)
-* [Panel administratora](#panel-administratora)
-* [Licencja](#licencja)
+Podgląd wyglądu aplikacji bez instalacji:
 
-\---
+**[Otwórz demo](demo/index.html)**
 
-## ✨ Funkcjonalności
+Demo zawiera wszystkie ekrany aplikacji:
+- Strona główna gracza
+- Ekran punktu po zeskanowaniu kodu QR
+- Potwierdzenie zaliczenia punktu
+- Logowanie administratora
+- Panel administratora
+- Statystyki i ranking graczy
+- Formularz dodawania gracza
+
+---
+
+## Spis treści
+
+- [Funkcjonalności](#funkcjonalności)
+- [Wymagania](#wymagania)
+- [Instalacja](#instalacja)
+- [Struktura bazy danych](#struktura-bazy-danych)
+- [Struktura projektu](#struktura-projektu)
+- [Jak działa gra](#jak-działa-gra)
+- [Panel administratora](#panel-administratora)
+- [Licencja](#licencja)
+
+---
+
+## Funkcjonalności
 
 **Dla graczy:**
-
-* Logowanie na punkt kontrolny przez zeskanowanie kodu QR
-* Automatyczne naliczanie punktów po zaliczeniu punktu
-* Ochrona przed wielokrotnym zaliczeniem tego samego punktu
-* Weryfikacja przynależności gracza do właściwej gry
+- Logowanie na punkt kontrolny przez zeskanowanie kodu QR
+- Automatyczne naliczanie punktów po zaliczeniu punktu
+- Ochrona przed wielokrotnym zaliczeniem tego samego punktu
+- Weryfikacja przynależności gracza do właściwej gry
 
 **Dla administratora:**
+- Panel zarządzania grą chroniony logowaniem
+- Dodawanie i usuwanie graczy oraz punktów kontrolnych
+- Generowanie i pobieranie kodów QR dla wszystkich punktów
+- Pobieranie haseł graczy w pliku ZIP
+- Podgląd statystyk i rankingu graczy w czasie rzeczywistym
+- Podgląd logów odwiedzin każdego gracza
+- Tworzenie nowej gry (kreator 4-krokowy)
 
-* Panel zarządzania grą chroniony logowaniem
-* Dodawanie i usuwanie graczy oraz punktów kontrolnych
-* Generowanie i pobieranie kodów QR dla wszystkich punktów
-* Pobieranie haseł graczy w pliku ZIP
-* Podgląd statystyk i rankingu graczy w czasie rzeczywistym
-* Podgląd logów odwiedzin każdego gracza
-* Tworzenie nowej gry (kreator 4-krokowy)
+---
 
-\---
+## Wymagania
 
-## 📸 Zrzuty ekranu
+- PHP >= 8.1 z rozszerzeniami: `mysqli`, `curl`, `zip`
+- MySQL >= 8.0 lub MariaDB >= 10.5
+- Serwer WWW: Apache lub Nginx
+- Dostęp do internetu na serwerze (generowanie kodów QR przez API)
 
-> Strona główna / punkt logowania gracza
+---
 
-!\[Strona główna](photo-min.jpg)
+## Instalacja
 
-\---
-
-## ✅ Wymagania
-
-* PHP >= 8.1 z rozszerzeniami: `mysqli`, `curl`, `zip`
-* MySQL >= 8.0 lub MariaDB >= 10.5
-* Serwer WWW: Apache lub Nginx
-* Dostęp do internetu na serwerze (generowanie kodów QR przez API)
-
-\---
-
-## 🚀 Instalacja
-
-### 1\. Sklonuj repozytorium
+### 1. Sklonuj repozytorium
 
 ```bash
 git clone https://github.com/uzytkownik/field-game.git
 cd field-game
 ```
 
-### 2\. Utwórz bazę danych i zaimportuj schemat
+### 2. Skonfiguruj połączenie z bazą
+
+Skopiuj plik przykładowej konfiguracji i uzupełnij dane:
 
 ```bash
-mysql -u root -p -e "CREATE DATABASE \\\\`field-game\\\\` CHARACTER SET utf8mb4 COLLATE utf8mb4\\\_polish\\\_ci;"
-mysql -u root -p field-game < field-game.sql
+cp connect.example.php connect.php
 ```
-
-### 3\. Skonfiguruj połączenie z bazą
 
 Edytuj plik `connect.php`:
 
 ```php
-$host      = "localhost";
-$db\\\_user   = "root";
-$db\\\_password = "twoje\\\_haslo";
-$db\\\_name   = "field-game";
+$host        = "localhost";
+$db_user     = "root";
+$db_password = "twoje_haslo";
+$db_name     = "field-game";
 ```
 
-### 4\. Skonfiguruj serwer WWW
+### 3. Utwórz bazę danych i zaimportuj schemat
+
+```bash
+mysql -u root -p -e "CREATE DATABASE \`field-game\` CHARACTER SET utf8mb4 COLLATE utf8mb4_polish_ci;"
+mysql -u root -p field-game < field-game.sql
+```
+
+### 4. Skonfiguruj serwer WWW
 
 Ustaw katalog główny (`DocumentRoot`) serwera na folder projektu. Przykład dla Apache:
 
 ```apache
-<VirtualHost \\\*:80>
+<VirtualHost *:80>
     ServerName field-game.local
     DocumentRoot /var/www/field-game
     <Directory /var/www/field-game>
@@ -98,124 +110,112 @@ Ustaw katalog główny (`DocumentRoot`) serwera na folder projektu. Przykład dl
 </VirtualHost>
 ```
 
-### 5\. Utwórz wymagane katalogi i nadaj uprawnienia
+### 5. Utwórz wymagane katalogi i nadaj uprawnienia
 
 ```bash
 mkdir -p qrcodes/codes administrator/hasla
 chmod 755 qrcodes/codes administrator/hasla
 ```
 
-### 6\. Zahaszuj hasła administratorów (jednorazowo)
-
-Po uruchomieniu serwera odwiedź w przeglądarce:
-
-```
-http://twojadomena.pl/migracja\\\_hasel.php
-```
-
-> ⚠️ \\\*\\\*Po wykonaniu migracji natychmiast usuń ten plik z serwera!\\\*\\\*
-
-```bash
-rm migracja\\\_hasel.php
-```
-
-### 7\. Zaloguj się do panelu admina
+### 6. Zaloguj się do panelu admina
 
 ```
 http://twojadomena.pl/administrator/admin.php
 ```
 
-Domyślne dane logowania (z pliku `field-game.sql`):
+Domyślne dane logowania:
 
-|Login|Hasło|
-|-|-|
-|`tworca`|`test`|
-|`pan`|`pan`|
+| Login | Hasło |
+|-------|-------|
+| `admin` | `admin` |
 
-> ⚠️ Zmień hasła po pierwszym logowaniu!
+> ⚠️ Zmień hasło po pierwszym logowaniu!
 
-\---
+---
 
 ## 🗄️ Struktura bazy danych
 
 ### Tabela `administrators`
 
-|Kolumna|Typ|Opis|
-|-|-|-|
-|`id`|INT (PK, AI)|Unikalny identyfikator|
-|`name`|VARCHAR(255)|Login administratora|
-|`password`|VARCHAR(255)|Hasło zahaszowane BCrypt|
-|`game\\\_id`|INT|ID przypisanej gry|
+| Kolumna    | Typ           | Opis                              |
+|------------|---------------|-----------------------------------|
+| `id`       | INT (PK, AI)  | Unikalny identyfikator            |
+| `name`     | VARCHAR(100)  | Login administratora (unikalny)   |
+| `password` | VARCHAR(255)  | Hasło zahaszowane BCrypt          |
+| `game_id`  | INT           | ID przypisanej gry                |
 
 ### Tabela `players`
 
-|Kolumna|Typ|Opis|
-|-|-|-|
-|`id`|INT (PK, AI)|Unikalny identyfikator|
-|`name`|VARCHAR(255)|Nazwa gracza|
-|`password`|VARCHAR(255)|Hasło do logowania na punkty|
-|`points`|INT|Aktualna liczba punktów|
-|`game\\\_id`|INT|ID gry do której należy gracz|
+| Kolumna    | Typ           | Opis                              |
+|------------|---------------|-----------------------------------|
+| `id`       | INT (PK, AI)  | Unikalny identyfikator            |
+| `name`     | VARCHAR(100)  | Nazwa gracza                      |
+| `password` | VARCHAR(255)  | Hasło do logowania na punkty      |
+| `points`   | INT           | Aktualna liczba punktów           |
+| `game_id`  | INT           | ID gry do której należy gracz     |
 
 ### Tabela `checkpoints`
 
-|Kolumna|Typ|Opis|
-|-|-|-|
-|`id`|INT (PK, AI)|Unikalny identyfikator|
-|`name`|VARCHAR(255)|Nazwa punktu kontrolnego|
-|`password`|VARCHAR(255)|Unikalny token w kodzie QR|
-|`points`|INT|Punkty przyznawane za zaliczenie|
-|`game\\\_id`|INT|ID gry do której należy punkt|
+| Kolumna    | Typ           | Opis                              |
+|------------|---------------|-----------------------------------|
+| `id`       | INT (PK, AI)  | Unikalny identyfikator            |
+| `name`     | VARCHAR(100)  | Nazwa punktu kontrolnego          |
+| `password` | VARCHAR(255)  | Unikalny token w kodzie QR        |
+| `points`   | INT           | Punkty przyznawane za zaliczenie  |
+| `game_id`  | INT           | ID gry do której należy punkt     |
 
 ### Tabela `logs`
 
-|Kolumna|Typ|Opis|
-|-|-|-|
-|`id`|INT (PK)|Unikalny identyfikator|
-|`player\\\_id`|INT|ID gracza|
-|`checkpoint\\\_id`|INT|ID zaliczonego punktu|
-|`timestamp`|DATETIME|Data i czas zaliczenia|
-|`game\\\_id`|INT|ID gry|
+| Kolumna         | Typ       | Opis                              |
+|-----------------|-----------|-----------------------------------|
+| `id`            | INT (PK)  | Unikalny identyfikator            |
+| `player_id`     | INT       | ID gracza                         |
+| `checkpoint_id` | INT       | ID zaliczonego punktu             |
+| `timestamp`     | DATETIME  | Data i czas zaliczenia            |
+| `game_id`       | INT       | ID gry                            |
 
 ### Relacje
 
 ```
-administrators (1) ──── (N) players      \\\[przez game\\\_id]
-administrators (1) ──── (N) checkpoints  \\\[przez game\\\_id]
+administrators (1) ──── (N) players      [przez game_id]
+administrators (1) ──── (N) checkpoints  [przez game_id]
 players        (1) ──── (N) logs
 checkpoints    (1) ──── (N) logs
 ```
 
-\---
+---
 
 ## 📁 Struktura projektu
 
 ```
 field-game/
+├── demo/
+│   └── index.html                  # Podgląd wyglądu aplikacji
+│   └── photo.jpg                  # Tło aplikacji
 ├── administrator/
 │   ├── dodawanie/
-│   │   ├── dod\\\_checkpoint.php      # Formularz dodania punktu
-│   │   ├── dod\\\_players.php         # Formularz dodania gracza
-│   │   ├── new\\\_checkpoint.php      # Zapis nowego punktu do bazy
-│   │   ├── new\\\_player.php          # Zapis nowego gracza do bazy
+│   │   ├── dod_checkpoint.php      # Formularz dodania punktu
+│   │   ├── dod_players.php         # Formularz dodania gracza
+│   │   ├── new_checkpoint.php      # Zapis nowego punktu do bazy
+│   │   ├── new_player.php          # Zapis nowego gracza do bazy
 │   │   └── zakonczenie.php         # Potwierdzenie operacji
-│   ├── nowa\\\_gra/
+│   ├── nowa_gra/
 │   │   ├── nowa.php                # Ostrzeżenie przed reset gry
 │   │   ├── tworzenie.php           # Krok 1 — usunięcie starej gry
-│   │   ├── new\\\_game\\\_names\\\_players.php    # Krok 2 — nazwy graczy
-│   │   ├── input\\\_players.php             # Zapis graczy
-│   │   ├── new\\\_game\\\_names\\\_checkpoints.php # Krok 3 — nazwy punktów
-│   │   ├── input\\\_checkpoints.php         # Zapis punktów
-│   │   └── zakonczenie.php               # Krok 4 — potwierdzenie
+│   │   ├── new_game_names_players.php     # Krok 2 — nazwy graczy
+│   │   ├── input_players.php              # Zapis graczy
+│   │   ├── new_game_names_checkpoints.php # Krok 3 — nazwy punktów
+│   │   ├── input_checkpoints.php          # Zapis punktów
+│   │   └── zakonczenie.php                # Krok 4 — potwierdzenie
 │   ├── usuwanie/
-│   │   ├── usu\\\_checkpoint.php      # Formularz usunięcia punktu
-│   │   ├── usu\\\_player.php          # Formularz usunięcia gracza
-│   │   ├── old\\\_checkpoint.php      # Usunięcie punktu z bazy
-│   │   ├── old\\\_player.php          # Usunięcie gracza z bazy
+│   │   ├── usu_checkpoint.php      # Formularz usunięcia punktu
+│   │   ├── usu_player.php          # Formularz usunięcia gracza
+│   │   ├── old_checkpoint.php      # Usunięcie punktu z bazy
+│   │   ├── old_player.php          # Usunięcie gracza z bazy
 │   │   └── zakonczenie.php         # Potwierdzenie usunięcia
 │   ├── admin.php                   # Strona logowania admina
-│   ├── zaloguj\\\_admin.php           # Logika logowania admina
-│   ├── admin\\\_panel.php             # Główny panel admina
+│   ├── zaloguj_admin.php           # Logika logowania admina
+│   ├── admin_panel.php             # Główny panel admina
 │   ├── hasla.php                   # Pobieranie haseł graczy (ZIP)
 │   ├── linki.php                   # Linki do punktów
 │   ├── logi.php                    # Lista graczy z logami
@@ -226,8 +226,8 @@ field-game/
 │   ├── pakowanie.php               # Pakowanie QR do ZIP
 │   ├── sprzatanie.php              # Czyszczenie plików tymczasowych
 │   └── zapis.php                   # Klasa QrCode (API qrserver.com)
-├── connect.php                     # Konfiguracja bazy danych
-├── helpers.php                     # Funkcje pomocnicze (prepared statements, autoryzacja)
+├── connect.example.php             # Szablon konfiguracji bazy danych
+├── helpers.php                     # Funkcje pomocnicze
 ├── index.php                       # Strona główna
 ├── point.php                       # Strona punktu (po zeskanowaniu QR)
 ├── zaloguj.php                     # Logowanie gracza na punkt
@@ -235,12 +235,12 @@ field-game/
 ├── logout.php                      # Wylogowanie
 ├── style.css                       # Style aplikacji
 ├── photo-min.jpg                   # Tło aplikacji
-└── field-game.sql                  # Schemat i dane startowe bazy
+└── field-game.sql                  # Schemat bazy danych
 ```
 
-\---
+---
 
-## 🎮 Jak działa gra
+##  Jak działa gra
 
 ```
 1. Admin tworzy grę — dodaje graczy i punkty kontrolne
@@ -258,40 +258,37 @@ field-game/
 5. Admin śledzi postępy przez panel statystyk
 ```
 
-\---
+---
 
-## 🔧 Panel administratora
+##  Panel administratora
 
 Po zalogowaniu admin ma dostęp do:
 
-|Funkcja|Opis|
-|-|-|
-|📊 Statystyki|Ranking graczy posortowany po punktach|
-|📋 Logi graczy|Historia odwiedzonych punktów każdego gracza|
-|🔗 Linki do punktów|Bezpośrednie linki do stron punktów|
-|📥 Pobierz kody QR|Generuje i pobiera kody QR jako plik ZIP|
-|🔑 Pobierz hasła|Pobiera hasła graczy jako plik ZIP|
-|➕ Dodaj gracza / punkt|Dodawanie pojedynczych elementów|
-|➖ Usuń gracza / punkt|Usuwanie z automatycznym czyszczeniem logów|
-|🆕 Nowa gra|Kreator nowej gry (resetuje aktualną)|
+| Funkcja | Opis |
+|---|---|
+|  Statystyki | Ranking graczy posortowany po punktach |
+|  Logi graczy | Historia odwiedzonych punktów każdego gracza |
+|  Linki do punktów | Bezpośrednie linki do stron punktów |
+|  Pobierz kody QR | Generuje i pobiera kody QR jako plik ZIP |
+|  Pobierz hasła | Pobiera hasła graczy jako plik ZIP |
+|  Dodaj gracza / punkt | Dodawanie pojedynczych elementów |
+|  Usuń gracza / punkt | Usuwanie z automatycznym czyszczeniem logów |
+|  Nowa gra | Kreator nowej gry (resetuje aktualną) |
 
-\---
+---
 
 ## 🔒 Bezpieczeństwo
 
-* Hasła administratorów hashowane algorytmem **BCrypt** (`password\\\_hash` / `password\\\_verify`)
-* Wszystkie zapytania SQL chronione przez **Prepared Statements** (ochrona przed SQL Injection)
-* Walidacja danych wejściowych przez `filter\\\_input()` i `htmlspecialchars()`
-* Każda chroniona strona weryfikuje sesję przed wykonaniem jakiejkolwiek operacji
-* `exit()` po każdym przekierowaniu `header()`
+- Hasła administratorów hashowane algorytmem **BCrypt** (`password_hash` / `password_verify`)
+- Wszystkie zapytania SQL chronione przez **Prepared Statements** (ochrona przed SQL Injection)
+- Walidacja danych wejściowych przez `filter_input()` i `htmlspecialchars()`
+- Każda chroniona strona weryfikuje sesję przed wykonaniem jakiejkolwiek operacji
+- `exit()` po każdym przekierowaniu `header()`
 
-\---
+---
 
 ## 📄 Licencja
 
 Ten projekt jest dostępny na licencji [MIT](LICENSE).
 
-© Maciej Pewniak 2023 — field.game.app@gmail.com
-
-
-
+Autor: Maciej Pewniak 2026 — field.game.app@gmail.com

@@ -7,7 +7,7 @@ wymagajAdmina('../administrator/admin.php');
 $identyfikator_gry = $_SESSION['game_id'];
 $polaczenie        = polaczZBaza();
 
-// Pobierz hasla punktow — trim() usunie spacje dodane przy zapisie
+
 $stmt = $polaczenie->prepare("SELECT id, password FROM checkpoints WHERE game_id = ?");
 $stmt->bind_param('i', $identyfikator_gry);
 $stmt->execute();
@@ -24,7 +24,6 @@ $generator_qr  = new QrCode();
 $numer_kolejny = 1;
 
 while ($wiersz = $wynik->fetch_assoc()) {
-    // trim() usuwa spacje z hasla — URL musi byc czysty
     $haslo_punktu = trim($wiersz['password']);
     $odnosnik     = 'http://field-game.pl/point.php?punkt=' . rawurlencode($haslo_punktu);
     $generator_qr->url($odnosnik);

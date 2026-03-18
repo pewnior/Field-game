@@ -1,8 +1,5 @@
 <?php
-/**
- * Klasa generujaca kody QR przy uzyciu API goqr.me (darmowe, bez klucza).
- * Poprzednie API Google Charts zostalo wylaczone i nie dziala.
- */
+
 class QrCode {
     private $adres_api = 'https://api.qrserver.com/v1/create-qr-code/';
     private $dane;

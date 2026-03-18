@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Field Game — Demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('photo.jpg');
+            background-size: cover;
+            background-attachment: fixed;
+            font-family: 'Roboto Condensed', sans-serif;
+        }
+        .container {
+            display: flex;
+            align-items: center;
+            align-content: center;
+            flex-direction: column;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+        @media screen and (min-width: 1024px) {
+            .text {
+                text-shadow: 2px 6px 15px rgba(66, 68, 90, 1);
+                border-radius: 2px 2px 5px 5px;
+                padding: 10px 20px 20px 20px;
+                width: 90%;
+                max-width: 320px;
+                background: #ffffff;
+                position: relative;
+                padding-top: 50px;
+                padding-bottom: 50px;
+                box-shadow: 0px 1px 5px rgba(0,0,0,0.3);
+                text-align: center;
+                background-color: wheat;
+            }
+            #stats {
+                text-shadow: 2px 6px 15px rgba(66, 68, 90, 1);
+                border-radius: 2px 2px 5px 5px;
+                background-color: wheat;
+                box-shadow: 0px 1px 5px rgba(0,0,0,0.3);
+                padding-top: 2%;
+                padding-bottom: 2%;
+            }
+        }
+        @media screen and (max-width: 1023px) {
+            .text {
+                text-shadow: 2px 6px 15px rgba(66, 68, 90, 1);
+                border-radius: 2px 2px 5px 5px;
+                padding: 10px 20px 20px 20px;
+                width: 100%;
+                min-width: 100%;
+                font-size: 50px;
+                background: #ffffff;
+                position: relative;
+                padding-top: 50px;
+                padding-bottom: 50px;
+                box-shadow: 0px 1px 5px rgba(0,0,0,0.3);
+                text-align: center;
+                background-color: wheat;
+            }
+            .logowanie {
+                width: 50%;
+                font-size: 50px;
+            }
+            #stats {
+                text-shadow: 2px 6px 15px rgba(66, 68, 90, 1);
+                border-radius: 2px 2px 5px 5px;
+                background-color: wheat;
+                padding: 10px 20px 20px 20px;
+                width: 100%;
+                min-width: 100%;
+                font-size: 50px;
+                box-shadow: 0px 1px 5px rgba(0,0,0,0.3);
+                padding-top: 50px;
+                padding-bottom: 50px;
+                text-align: center;
+            }
+        }
+        a { color: black; text-decoration: none; }
+        a:hover { color: blue; }
+        #pass  { border-radius: 5px; }
+        #login {
+            border-radius: 5px;
+            font-family: 'Roboto Condensed', sans-serif;
+            font-weight: bold;
+            width: 50%;
+        }
+        #admin {
+            color: black;
+            text-decoration: none;
+            padding-left: 50%;
+        }
+        .exit { color: black; text-decoration: none; }
+
+        
+        .demo-bar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 9999;
+            background: rgba(0, 0, 0, 0.82);
+            backdrop-filter: blur(4px);
+            padding: 8px 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+        }
+        .demo-bar span {
+            color: #5EC9DB;
+            font-family: 'Roboto Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            margin-right: 8px;
+            white-space: nowrap;
+        }
+        .demo-bar button {
+            background: transparent;
+            color: #ccc;
+            border: 1px solid #555;
+            padding: 4px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-family: 'Roboto Condensed', sans-serif;
+            font-size: 12px;
+            white-space: nowrap;
+            transition: all 0.15s;
+        }
+        .demo-bar button:hover { border-color: #5EC9DB; color: #fff; }
+        .demo-bar button.active { background: #5EC9DB; color: #000; border-color: #5EC9DB; font-weight: 700; }
+
+       
+        .demo-bar-offset {
+            padding-top: 48px;
+            min-height: 100vh;
+        }
+
+        .screen-full {
+            min-height: calc(100vh - 48px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+       
+        .screen-stats {
+            min-height: calc(100vh - 48px);
+            padding: 20px;
+        }
+
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        @media screen and (min-width: 1024px) {
+            .logowanie {
+                border: 1px solid #ccc;
+                border-radius: 3px;
+                padding: 6px 10px;
+                font-family: 'Roboto Condensed', sans-serif;
+                font-size: 14px;
+                width: 80%;
+                margin: 3px 0;
+            }
+            input[type="submit"].logowanie {
+                background-color: #e8d4a0;
+                cursor: pointer;
+                font-weight: bold;
+                width: 50%;
+            }
+            input[type="submit"].logowanie:hover { background-color: #d4b96e; }
+            select.logowanie { background: #fff; }
+        }
+    </style>
+</head>
+<body>
+
+
+<div class="demo-bar">
+    <span>Field Game — Demo</span>
+    <button class="active" onclick="show('index',        this)">Strona główna</button>
+    <button              onclick="show('point',         this)">Punkt QR</button>
+    <button              onclick="show('gra',           this)">Zaliczenie punktu</button>
+    <button              onclick="show('admin',         this)">Logowanie admina</button>
+    <button              onclick="show('admin_panel',   this)">Panel admina</button>
+    <button              onclick="show('statystyki',    this)">Statystyki</button>
+    <button              onclick="show('logi',          this)">Logi graczy</button>
+    <button              onclick="show('log',           this)">Log gracza</button>
+    <button              onclick="show('dod_player',    this)">Dodaj gracza</button>
+    <button              onclick="show('usu_player',    this)">Usuń gracza</button>
+</div>
+
+<div class="demo-bar-offset">
+
+
+<div class="screen active" id="s-index">
+    <div class="screen-full">
+        <div class="container">
+            <div class="text">
+                <b class="name">Field game </b><br>
+                Aby zaliczyć punkt i zdobyć punkty <br>zeskanuj QR kod<br><br>
+                <a id="admin" href="#">Administrator</a>
+                <br><br>Autor: Maciej Pewniak 2026 <br> Kontakt: <br> field.game.app@gmail.com
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="screen" id="s-point">
+    <div class="screen-full">
+        <div class="container">
+            <div class="text" id="point">
+                <b class="name">Field game</b>
+                <form onsubmit="return false;">
+                    <br/>
+                    <input class="logowanie" type="password" id="pass" placeholder="Hasło"/><br/><br/>
+                    <input class="logowanie" id="login" type="submit" value="Zaloguj się"/><br/>
+                </form>
+                <br/><br/>Autor: Maciej Pewniak 2026 
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="screen" id="s-gra">
+    <div class="screen-full">
+        <div class="container">
+            <div class="text" id="point">
+                <p>Witaj jeden! </p>
+                <p>Punkt został zaliczony</p>
+                <p>| <b>Punkty</b>: 4+2</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="screen" id="s-admin">
+    <div class="screen-full">
+        <div class="container">
+            <div class="text">
+                <b class="name">Field game - Administrator</b><br><br>
+                <a href="#">&lt;--Powrót</a>
+                <br><br>
+                <form onsubmit="return false;">
+                    <input type="text"     class="logowanie" id="login-adm" placeholder="Login"/><br>
+                    <br/>
+                    <input type="password" class="logowanie" id="pass-ad"   placeholder="Hasło"/><br/><br/>
+                    <input id="login" type="submit" class="logowanie" value="Zaloguj się"/><br/>
+                </form>
+                <br/><br/>Autor: Maciej Pewniak 2026
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="screen" id="s-admin_panel">
+    <div class="screen-full">
+        <div class="container">
+            <div class="text">
+                <b class="name">Field game - panel administratora</b><br/>
+                <p>Witaj tworca! [ <a href="#">Wyloguj się!</a> ]</p>
+                <br/>Aktualna gra:<br/>
+                Ilość graczy: 6<br/>
+                Ilość punktów: 4<br/>
+                <br/><a href="#">Pobierz kody QR</a>
+                <br/><a href="#">Pobierz hasła graczy</a>
+                <br/><a href="#">Pokaż statystyki</a>
+                <br/><a href="#">Pokaż logi graczy</a>
+                <br/><a href="#">Linki do logowania na punkty</a>
+                <br/><br/><a href="#">Dodaj gracza</a>
+                <br/><a href="#">Dodaj punkt</a>
+                <br/><a href="#">Usuń punkt</a>
+                <br/><a href="#">Usuń gracza</a>
+                <br/><br/><a href="#">Stwórz nową grę</a>
+                <br/><br/>Kontakt:<br/>field.game.app@gmail.com
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="screen" id="s-statystyki">
+    <div class="screen-stats">
+        <div id="stats">
+            <p class="exit" align="center"><a href="#">&lt;-- Powrót</a></p>
+            <table width="900" align="center" border="1" bordercolor="#d5d5d5" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td width="50"  align="center" bgcolor="#5EC9DB">Miejsce</td>
+                    <td width="50"  align="center" bgcolor="#5EC9DB">id</td>
+                    <td width="100" align="center" bgcolor="#5EC9DB">Nazwa</td>
+                    <td width="100" align="center" bgcolor="#5EC9DB">Punkty</td>
+                    <td width="50"  align="center" bgcolor="#5EC9DB">Log</td>
+                </tr>
+                <tr>
+                    <td width="50"  align="center" bgcolor="#5EC9DB">1</td>
+                    <td width="50"  align="center" bgcolor="#e5e5e5">170</td>
+                    <td width="100" align="center" bgcolor="#e5e5e5">jeden</td>
+                    <td width="100" align="center" bgcolor="#e5e5e5">6</td>
+                    <td width="50"  align="center" bgcolor="#e5e5e5"><a href="#">Link</a></td>
+                </tr>
+                <tr>
+                    <td width="50"  align="center" bgcolor="#5EC9DB">2</td>
+                    <td width="50"  align="center" bgcolor="#e5e5e5">171</td>
+                    <td width="100" align="center" bgcolor="#e5e5e5">two</td>
+                    <td width="100" align="center" bgcolor="#e5e5e5">4</td>
+                    <td width="50"  align="center" bgcolor="#e5e5e5"><a href="#">Link</a></td>
+                </tr>
+                <tr>
+                    <td width="50"  align="center" bgcolor="#5EC9DB">3</td>
+                    <td width="50"  align="center" bgcolor="#e5e5e5">176</td>
+                    <td width="100" align="center" bgcolor="#e5e5e5">cs</td>
+                    <td width="100" align="center" bgcolor="#e5e5e5">2</td>
+                    <td width="50"  align="center" bgcolor="#e5e5e5"><a href="#">Link</a></td>
+                </tr>
+                <tr>
+                    <td width="50"  align="center" bgcolor="#5EC9DB">4</td>
+                    <td width="50"  align="center" bgcolor="#e5e5e5">172</td>
+                    <td width="100" align="center" bgcolor="#e5e5e5">trzy</td>
+                    <td width="100" align="center" bgcolor="#e5e5e5">0</td>
+                    <td width="50"  align="center" bgcolor="#e5e5e5"><a href="#">Link</a></td>
+                </tr>
+                <tr>
+                    <td width="50"  align="center" bgcolor="#5EC9DB">5</td>
+                    <td width="50"  align="center" bgcolor="#e5e5e5">173</td>
+                    <td width="100" align="center" bgcolor="#e5e5e5">cztery</td>
+                    <td width="100" align="center" bgcolor="#e5e5e5">0</td>
+                    <td width="50"  align="center" bgcolor="#e5e5e5"><a href="#">Link</a></td>
+                </tr>
+                <tr>
+                    <td width="50"  align="center" bgcolor="#5EC9DB">6</td>
+                    <td width="50"  align="center" bgcolor="#e5e5e5">174</td>
+                    <td width="100" align="center" bgcolor="#e5e5e5">piec</td>
+                    <td width="100" align="center" bgcolor="#e5e5e5">0</td>
+                    <td width="50"  align="center" bgcolor="#e5e5e5"><a href="#">Link</a></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<div class="screen" id="s-logi">
+    <div class="screen-stats">
+        <div id="stats">
+            <p class="exit" align="center"><a href="#">&lt;-- Powrót</a></p>
+            <table width="900" align="center" border="1" bordercolor="#d5d5d5" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td width="50"  align="center" bgcolor="#5EC9DB">id</td>
+                    <td width="100" align="center" bgcolor="#5EC9DB">Nazwa</td>
+                    <td width="50"  align="center" bgcolor="#5EC9DB">Link</td>
+                </tr>
+                <tr>
+                    <td width="50"  align="center" bgcolor="#e5e5e5">170</td>
+                    <td width="100" align="center" bgcolor="#e5e5e5">jeden</td>
+                    <td width="50"  align="center" bgcolor="#e5e5e5"><a href="#">Link</a></td>
+                </tr>
+                <tr>
+                    <td width="50"  align="center" bgcolor="#e5e5e5">171</td>
+                    <td width="100" align="center" bgcolor="#e5e5e5">two</td>
+                    <td width="50"  align="center" bgcolor="#e5e5e5"><a href="#">Link</a></td>
+                </tr>
+                <tr>
+                    <td width="50"  align="center" bgcolor="#e5e5e5">172</td>
+                    <td width="100" align="center" bgcolor="#e5e5e5">trzy</td>
+                    <td width="50"  align="center" bgcolor="#e5e5e5"><a href="#">Link</a></td>
+                </tr>
+                <tr>
+                    <td width="50"  align="center" bgcolor="#e5e5e5">173</td>
+                    <td width="100" align="center" bgcolor="#e5e5e5">cztery</td>
+                    <td width="50"  align="center" bgcolor="#e5e5e5"><a href="#">Link</a></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<div class="screen" id="s-log">
+    <div class="screen-stats">
+        <div id="stats">
+            <p class="exit" align="center"><a href="#">&lt;-- Powrót</a></p>
+            <table width="900" align="center" border="1" bordercolor="#d5d5d5" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td width="50"  align="center" bgcolor="#5EC9DB">Lp</td>
+                    <td width="100" align="center" bgcolor="#5EC9DB">Nazwa punktu</td>
+                    <td width="100" align="center" bgcolor="#5EC9DB">Czas</td>
+                </tr>
+                <tr>
+                    <td width="50"  align="center" bgcolor="#5EC9DB">1</td>
+                    <td width="100" align="center" bgcolor="#e5e5e5">k</td>
+                    <td width="100" align="center" bgcolor="#e5e5e5">2023-05-14 13:48:57</td>
+                </tr>
+                <tr>
+                    <td width="50"  align="center" bgcolor="#5EC9DB">2</td>
+                    <td width="100" align="center" bgcolor="#e5e5e5">l</td>
+                    <td width="100" align="center" bgcolor="#e5e5e5">2023-05-24 18:04:08</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<div class="screen" id="s-dod_player">
+    <div class="screen-full">
+        <div class="container">
+            <div class="text">
+                <b>Dodawanie gracza</b><br><br>
+                <a href="#">&lt;--Powrót</a><br><br>
+                <form onsubmit="return false;">
+                    <input type="text" class="logowanie" placeholder="Nazwa"/><br>
+                    <br/>
+                    <input type="submit" class="logowanie" value="Dodaj"/>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="screen" id="s-usu_player">
+    <div class="screen-full">
+        <div class="container">
+            <div class="text">
+                <p class="exit" align="center"><a href="#">&lt;-- Powrót</a></p>
+                <b>Wybierz gracza którego chcesz usunąć:</b><br/><br/>
+                <form onsubmit="return false;">
+                    <select class="logowanie" name="nazwa">
+                        <option value="170">jeden</option>
+                        <option value="171">two</option>
+                        <option value="172">trzy</option>
+                        <option value="173">cztery</option>
+                        <option value="174">piec</option>
+                    </select>
+                    <br/><br/>
+                    <input type="submit" class="logowanie" value="Usuń"/>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+
+<script>
+function show(id, btn) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.demo-bar button').forEach(b => b.classList.remove('active'));
+    document.getElementById('s-' + id).classList.add('active');
+    btn.classList.add('active');
+}
+</script>
+</body>
+</html>
